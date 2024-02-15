@@ -15,6 +15,10 @@ class LoginHandler  {
             $loggedUser->id = $data['id'];
             $loggedUser->email = $data['email'];
             $loggedUser->name = $data['name'];
+            $loggedUser->birthdate = $data['birthdate'];
+            $loggedUser->avatar = $data['avatar'];
+            $loggedUser->cover = $data['cover'];
+            
 
 
             return $loggedUser;
@@ -37,6 +41,27 @@ class LoginHandler  {
             }
         }
         return false;
+    }
+
+    public static function emailExists($email) {
+        $user = User::select()->where('email', $email)->one();
+        return $user ? true : false;
+    }
+
+    public static function addUser($name, $email, $password, $birthdate) {
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $token = md5(time().rand(0,9999).time());
+        User::insert([
+            'email' => $email,
+            'password' => $hash,
+            'name' => $name,
+            'birthdate' => $birthdate,
+            'avatar' => 'default.jpg', // 'default.jpg' é o valor padrão para o campo 'avatar'
+            'cover' => 'cover.jpg', // 'cover.jpg' é o valor padrão para o campo 'cover
+            'token' => $token
+        ])->execute();
+
+        return $token;
     }
 
 }
